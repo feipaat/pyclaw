@@ -3,10 +3,6 @@ from numpy import *
 from scipy import integrate
 import numpy as np
 import scipy
-#%matplotlib inline
-import matplotlib.pyplot as plt
-#import mpld3
-#mpld3.enable_notebook()
 
 def test(N,tfinal,q):
     
@@ -37,28 +33,27 @@ def test(N,tfinal,q):
     xx=(np.asarray(range(1,2*N,2)))/(2.0*N)
     xi = zeros(len(xx))
     sol = []
-    for guess in range(N):
-        for i in range(guess):
-            x = xx[i]
-            xi[i] = scipy.optimize.fsolve(func, xi[i-1])
-        xi[N-1]=xi[0]+1
-        for j in np.arange(len(xx)-2, guess-1,-1):
-            x = xx[j]
-            xi[j] = scipy.optimize.fsolve(func, xi[j+1]) 
-        q_0_xi=np.sin(2.0*np.pi*xi)+0.5
-        sol.append(np.abs(0.50-scipy.integrate.trapz(q_0_xi,xx)))
+    for i in range(N):
+        x = xx[i]
+        xi[i] = scipy.optimize.fsolve(func, xi[i-1])
+    xi[N-1]=xi[0]+1
+    for j in np.arange(len(xx)-2, N-1,-1):
+        x = xx[j]
+        xi[j] = scipy.optimize.fsolve(func, xi[j+1]) 
+    q_0_xi=np.sin(2.0*np.pi*xi)+0.5
+        #sol.append(np.abs(0.50-scipy.integrate.trapz(q_0_xi,xx)))
 
-    (m,index1) = min((index2,index1) for index1,index2 in enumerate(sol))
+    #(m,index1) = min((index2,index1) for index1,index2 in enumerate(sol))
     h1=1.0/N
     Semi_1_Before=q_0_xi
 
     xx=(np.asarray(range(1,4*N,2)))/(4.0*N)
     xi = zeros(len(xx))
-    for i in range(guess):
+    for i in range(2*N):
         x = xx[i]
         xi[i] = scipy.optimize.fsolve(func, xi[i-1])
     xi[2*N-1]=xi[0]+1
-    for j in np.arange(len(xx)-2, guess-1,-1):
+    for j in np.arange(len(xx)-2, 2*N-1,-1):
         x = xx[j]
         xi[j] = scipy.optimize.fsolve(func, xi[j+1]) 
     q_0_xi=np.sin(2.0*np.pi*xi)+0.5
@@ -90,13 +85,3 @@ def test(N,tfinal,q):
         print "After the break time"
     else:
         print "Error"
-        
-    fig, ax = plt.subplots()
-    ax.plot(xx,q_0_xi,'og',label=r"Semianalytic")
-    ax.plot(claw.frames[10].grid.p_centers[0],claw.frames[10].q[0,:],'-r', label=r"CLAWPACK")
-    ax.legend(loc='lower left') # upper left corner
-    ax.set_xlabel(r'Interval')
-    ax.set_ylabel(r'Function value')
-
-if __name__=="__main__":
-	test(100,0.1,1)
